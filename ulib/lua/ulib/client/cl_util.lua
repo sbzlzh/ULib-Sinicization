@@ -24,19 +24,72 @@ end
 net.Receive( "URPC", ULibRPC )
 
 
--- This will play sounds client side
+--[[
+	Function: umsgRcv
 
-net.Receive( "ulib_sound", function( ln )
-	local str = net.ReadString()
+	Receive a umsg sent by ULib.umsgSend
+
+	Parameters:
+
+		um - The user message object
+
+	Returns:
+
+		The variable from the umsg.
+]]
+function ULib.umsgRcv( um, control )
+	local tv = control or um:ReadChar()
+
+	local ret -- Our return value
+	if tv == ULib.TYPE_STRING then
+		ret = um:ReadString()
+	elseif tv == ULib.TYPE_FLOAT then
+		ret = um:ReadFloat()
+	elseif tv == ULib.TYPE_SHORT then
+		ret = um:ReadShort()
+	elseif tv == ULib.TYPE_LONG then
+		ret = um:ReadLong()
+	elseif tv == ULib.TYPE_BOOLEAN then
+		ret = um:ReadBool()
+	elseif tv == ULib.TYPE_ENTITY then
+		ret = um:ReadEntity()
+	elseif tv == ULib.TYPE_VECTOR then
+		ret = um:ReadVector()
+	elseif tv == ULib.TYPE_ANGLE then
+		ret = um:ReadAngle()
+	elseif tv == ULib.TYPE_CHAR then
+		ret = um:ReadChar()
+	elseif tv == ULib.TYPE_TABLE_BEGIN then
+		ret = {}
+		while true do -- Yes an infite loop. We have a break inside.
+			local key = ULib.umsgRcv( um )
+			if key == nil then break end -- Here's our break
+			ret[ key ] = ULib.umsgRcv( um )
+		end
+	elseif tv == ULib.TYPE_TABLE_END then
+		return nil
+	elseif tv == ULib.TYPE_NIL then
+		return nil
+	else
+		ULib.error( "传递给 umsgRcv 的未知类型 - " .. tv )
+	end
+
+	return ret
+end
+
+-- This will play sounds client side
+local function rcvSound( um )
+	local str = um:ReadString()
 	if not ULib.fileExists( "sound/" .. str ) then
-		Msg( "[LC ULib ERROR] 接收到无效声音\n" )
+		Msg( "[LC ULib ERROR] Received invalid sound\n" )
 		return
 	end
 
 	if LocalPlayer():IsValid() then
 		LocalPlayer():EmitSound( Sound( str ) )
 	end
-end )
+end
+usermessage.Hook( "ulib_sound", rcvSound )
 
 local cvarinfo = {} -- Stores the client cvar object indexed by name of the server cvar
 local reversecvar = {} -- Stores the name of server cvars indexed by the client cvar
@@ -55,13 +108,11 @@ local function clCvarChanged( cl_cvar, oldvalue, newvalue )
 end
 
 -- This is the counterpart to <replicatedWithWritableCvar>. See that function for more info. We also add callbacks from here.
-
-net.Receive( "ulib_repWriteCvar", function( len )
-
-	local sv_cvar = net.ReadString()
-	local cl_cvar = net.ReadString()
-	local default_value = net.ReadString()
-	local current_value = net.ReadString()
+local function readCvar( um )
+	local sv_cvar = um:ReadString()
+	local cl_cvar = um:ReadString()
+	local default_value = um:ReadString()
+	local current_value = um:ReadString()
 
 	cvarinfo[ sv_cvar ] = GetConVar( cl_cvar ) or CreateClientConVar( cl_cvar, default_value, false, false ) -- Make sure it's created one way or another (second case is most common)
 	reversecvar[ cl_cvar ] = { sv_cvar=sv_cvar }
@@ -73,19 +124,17 @@ net.Receive( "ulib_repWriteCvar", function( len )
 			RunConsoleCommand( cl_cvar, current_value )
 		end
 	end )
-	
-	cvars.AddChangeCallback( cl_cvar, clCvarChanged )
-	
-end )
 
+	cvars.AddChangeCallback( cl_cvar, clCvarChanged )
+end
+usermessage.Hook( "ulib_repWriteCvar", readCvar )
 
 -- This is called when they've attempted to change a cvar they don't have access to.
-
-net.Receive( "ulib_repChangeCvar", function( len )
-	local ply = net.ReadEntity()
-	local cl_cvar = net.ReadString()
-	local oldvalue = net.ReadString()
-	local newvalue = net.ReadString()
+local function changeCvar( um )
+	local ply = um:ReadEntity()
+	local cl_cvar = um:ReadString()
+	local oldvalue = um:ReadString()
+	local newvalue = um:ReadString()
 	local changed = oldvalue ~= newvalue
 
 	if not reversecvar[ cl_cvar ] then -- Error!
@@ -104,4 +153,5 @@ net.Receive( "ulib_repChangeCvar", function( len )
 			RunConsoleCommand( cl_cvar, newvalue)
 		end
 	end )
-end )
+end
+usermessage.Hook( "ulib_repChangeCvar", changeCvar )

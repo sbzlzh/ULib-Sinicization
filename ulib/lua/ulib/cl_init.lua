@@ -29,7 +29,7 @@ end
 local files = file.Find( "ulib/modules/client/*.lua", "LUA" )
 if #files > 0 then
 	for _, file in ipairs( files ) do
-		Msg( "[ULIB] Loading CLIENT module: " .. file .. "\n" )
+		Msg( "[ULIB] 加载共享模块: " .. file .. "\n" )
 		include( "ulib/modules/client/" .. file )
 	end
 end

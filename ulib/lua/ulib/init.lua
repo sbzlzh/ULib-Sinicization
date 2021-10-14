@@ -25,8 +25,6 @@ if not ULib then
 	include( "ulib/shared/player.lua" )
 	Msg( "//  server/player.lua        //\n" )
 	include( "ulib/server/player.lua" )
-	Msg( "//  server/bans.lua          //\n" )
-	include( "ulib/server/bans.lua" )
 	Msg( "//  shared/messages.lua      //\n" )
 	include( "ulib/shared/messages.lua" )
 	Msg( "//  shared/commands.lua      //\n" )
@@ -72,7 +70,7 @@ if not ULib then
 	local files = file.Find( "ulib/modules/*.lua", "LUA" )
 	if #files > 0 then
 		for _, file in ipairs( files ) do
-			Msg( "[ULIB] Loading SHARED module: " .. file .. "\n" )
+			Msg( "[ULIB] 加载共享模块: " .. file .. "\n" )
 			include( "ulib/modules/" .. file )
 			AddCSLuaFile( "ulib/modules/" .. file )
 		end
@@ -82,7 +80,7 @@ if not ULib then
 	local files = file.Find( "ulib/modules/server/*.lua", "LUA" )
 	if #files > 0 then
 		for _, file in ipairs( files ) do
-			Msg( "[ULIB] Loading SERVER module: " .. file .. "\n" )
+			Msg( "[ULIB] 加载服务器模块: " .. file .. "\n" )
 			include( "ulib/modules/server/" .. file )
 		end
 	end
@@ -91,7 +89,7 @@ if not ULib then
 	local files = file.Find( "ulib/modules/client/*.lua", "LUA" )
 	if #files > 0 then
 		for _, file in ipairs( files ) do
-			Msg( "[ULIB] Loading CLIENT module: " .. file .. "\n" )
+			Msg( "[ULIB] 加载客户端模块: " .. file .. "\n" )
 			AddCSLuaFile( "ulib/modules/client/" .. file )
 		end
 	end

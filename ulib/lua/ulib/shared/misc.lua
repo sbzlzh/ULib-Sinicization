@@ -299,7 +299,7 @@ function ULib.parseKeyValues( str, convert )
 				is_insert_last_op = false
 				current_table = table.remove( parent_tables )
 				if current_table == nil then
-					return nil, "在线不匹配的递归表 " .. i
+					return nil, "Mismatched recursive tables on line " .. i
 				end
 
 			else
@@ -316,12 +316,12 @@ function ULib.parseKeyValues( str, convert )
 			current_table[ tokens[ 1 ] ] = tokens[ 2 ]
 
 		elseif num_tokens > 2 then
-			return nil, "在线输入错误 " .. i
+			return nil, "Bad input on line " .. i
 		end
 	end
 
 	if #parent_tables ~= 0 then
-		return nil, "不匹配的递归表"
+		return nil, "Mismatched recursive tables"
 	end
 
 	if convert and table.Count( current_table ) == 1 and

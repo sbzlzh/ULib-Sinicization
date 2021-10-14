@@ -367,7 +367,7 @@ function cmds.BoolArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 	local desired = ULib.toBool( arg )
 
 	if self.restrictedTo ~= nil and desired ~= self.restrictedTo then
-		return nil, "你不能指定 " .. tostring( desired ) .. " here"
+		return nil, "你不能指定 " .. tostring( desired ) .. " 在这里"
 	end
 
 	return desired
@@ -512,10 +512,6 @@ function cmds.PlayerArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 	self:processRestrictions( ply, cmdInfo, plyRestrictions )
 
 	if not arg and table.HasValue( cmdInfo, cmds.optional ) then
-		if not cmdInfo.default and not ply:IsValid() then
-			return nil, "必须指定目标"
-		end
-
 		arg = cmdInfo.default or "$" .. ULib.getUniqueIDForPlayer( ply ) -- Set it, needs to go through our process
 	end
 
@@ -523,16 +519,16 @@ function cmds.PlayerArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 
 	local return_value, err_msg2 = hook.Call( ULib.HOOK_PLAYER_TARGET, _, ply, cmdInfo.cmd, target )
 	if return_value == false then
-		return nil, err_msg2 or "你不能权限这个人"
+		return nil, err_msg2 or "你不能定位这个人"
 	elseif type( return_value ) == "Player" then
 		target = return_value
 	end
 
 	if return_value ~= true then -- Go through our "normal" restriction process
-		if not target then return nil, err_msg1 or "目标未找到" end
+		if not target then return nil, err_msg1 or "没有找到目标" end
 
 		if self.restrictedTargets == false or (self.restrictedTargets and not table.HasValue( self.restrictedTargets, target )) then
-			return nil, "你不能权限这个人"
+			return nil, "你不能定位这个人"
 		end
 	end
 
@@ -627,10 +623,6 @@ function cmds.PlayersArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 	self:processRestrictions( ply, cmdInfo, plyRestrictions )
 
 	if not arg and table.HasValue( cmdInfo, cmds.optional ) then
-		if not cmdInfo.default and not ply:IsValid() then
-			return nil, "必须指定目标"
-		end
-
 		arg = cmdInfo.default or "$" .. ULib.getUniqueIDForPlayer( ply ) -- Set it, needs to go through our process
 	end
 
@@ -638,17 +630,17 @@ function cmds.PlayersArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 
 	local return_value, err_msg = hook.Call( ULib.HOOK_PLAYER_TARGETS, _, ply, cmdInfo.cmd, targets )
 	if return_value == false then
-		return nil, err_msg or "你不能权限这个人或这些人"
+		return nil, err_msg or "您不能针对此人或这些人"
 	elseif type( return_value ) == "table" then
 		if #return_value == 0 then
-			return nil, err_msg or "你不能权限这个人或这些人"
+			return nil, err_msg or "您不能针对此人或这些人"
 		else
 			targets = return_value
 		end
 	end
 
 	if return_value ~= true then -- Go through our "normal" restriction process
-		if not targets then return nil, "目标未找到" end
+		if not targets then return nil, "未找到目标" end
 
 		if self.restrictedTargets then
 			local i = 1
@@ -662,7 +654,7 @@ function cmds.PlayersArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 		end
 
 		if self.restrictedTargets == false or #targets == 0 then
-			return nil, "你不能权限这个人或这些人"
+			return nil, "您不能针对此人或这些人"
 		end
 	end
 
@@ -874,13 +866,13 @@ local translatedCmds = cmds.translatedCmds -- To save my fingers, quicker access
 
 local function translateCmdCallback( ply, commandName, argv )
 	local cmd = translatedCmds[ commandName:lower() ]
-	if not cmd then return error( "无效代码!" ) end
+	if not cmd then return error( "无效命令!" ) end
 
 	local isOpposite = string.lower( cmd.opposite or "" ) == string.lower( commandName )
 
 	local access, accessTag = ULib.ucl.query( ply, commandName )
 	if not access then
-		ULib.tsayError( ply, "你无权使用这个代码, " .. ply:Nick() .. "!", true ) -- Print their name to intimidate them :)
+		ULib.tsayError( ply, "您无权访问此命令, " .. ply:Nick() .. "!", true ) -- Print their name to intimidate them :)
 		return
 	end
 
@@ -896,7 +888,7 @@ local function translateCmdCallback( ply, commandName, argv )
 			table.insert( args, cmd.oppositeArgs[ i ] )
 		else
 			if not argInfo.type.invisible and not argInfo.invisible and not argv[ argNum ] and not table.HasValue( argInfo, cmds.optional ) then
-				ULib.tsayError( ply, "用法: " .. commandName .. " " .. cmd:getUsage( ply ), true )
+				ULib.tsayError( ply, "Usage: " .. commandName .. " " .. cmd:getUsage( ply ), true )
 				return
 			end
 
@@ -956,7 +948,7 @@ local function translateAutocompleteCallback( commandName, args )
 	-- This function is some of the most obfuscated code I've ever written... really sorry about this.
 	-- This function was the unfortunate victim of feeping creaturism
 	local cmd = translatedCmds[ commandName:lower() ]
-	if not cmd then return error( "无效代码!" ) end
+	if not cmd then return error( "命令无效!" ) end
 
 	local isOpposite = string.lower( cmd.opposite or "" ) == string.lower( commandName )
 	local ply
@@ -966,7 +958,7 @@ local function translateAutocompleteCallback( commandName, args )
 		-- Assume listen server, seems to be the only time this can happen
 		ply = Entity( 1 ) -- Should be first player
 		if not ply or not ply:IsValid() or not ply:IsListenServerHost() then
-			return error( "无效代码!" )
+			return error( "假设失败!" )
 		end
 	end
 
@@ -1340,7 +1332,7 @@ local function routedCommandCallback( ply, commandName, argv )
 		ply.ulib_threat_warned = nil
 	elseif ply.ulib_threat_level >= 100 then
 		if not ply.ulib_threat_warned then
-			ULib.tsay( ply, "您运行的命令过多，速度过快，请稍候再执行" )
+			ULib.tsay( ply, "您运行的命令过多,速度过快,请稍候再执行" )
 			ply.ulib_threat_warned = true
 		end
 		return
@@ -1350,7 +1342,7 @@ local function routedCommandCallback( ply, commandName, argv )
 
 
 	if not routedCmds[ commandName:lower() ] then
-		return error( "基本命令 \"" .. commandName .. "\" 没有定义!" )
+		return error( "Base command \"" .. commandName .. "\" is not defined!" )
 	end
 	local orig_argv = argv
 	local orig_commandName = commandName
@@ -1362,7 +1354,7 @@ end
 if SERVER then
 	sayCommandCallback = function( ply, sayCommand, argv )
 		if not sayCmds[ sayCommand ] then
-			return error( "说命令 \"" .. sayCommand .. "\" 没有定义!" )
+			return error( "Say command \"" .. sayCommand .. "\" is not defined!" )
 		end
 
 		sayCmds[ sayCommand ].__fn( ply, sayCmds[ sayCommand ].__cmd, argv )
@@ -1370,10 +1362,7 @@ if SERVER then
 
 	local function hookRoute( ply, command, argv )
 		if #argv > 0 then
-			local commandName = table.remove( argv, 1 )
-			if routedCmds[ commandName:lower() ] then
-				routedCommandCallback( ply, commandName, argv )
-			end
+			concommand.Run( ply, table.remove( argv, 1 ), argv )
 		end
 	end
 	concommand.Add( "_u", hookRoute )
@@ -1402,7 +1391,7 @@ local function autocompleteCallback( commandName, args )
 			-- Assume listen server, seems to be the only time this can happen
 			ply = Entity( 1 ) -- Should be first player
 			if not ply or not ply:IsValid() or not ply:IsListenServerHost() then
-				return error( "假设失败!" )
+				return error( "Assumption fail!" )
 			end
 		end
 

@@ -202,7 +202,7 @@ local function reloadGroups()
 	end
 
 	if needsBackup then
-		Msg( "组文件的格式不正确。试图修复和备份原始\n" )
+		Msg( "组文件的格式不正确.试图修复和备份原始\n" )
 		if err then
 			Msg( "读取组文件时出错: " .. err .. "\n" )
 		end
@@ -288,7 +288,7 @@ local function reloadUsers()
 	end
 
 	if needsBackup then
-		Msg( "用户文件格式不正确。试图修复和备份原始\n" )
+		Msg( "用户文件格式不正确.试图修复和备份原始\n" )
 		if err then
 			Msg( "读取用户文件时出错: " .. err .. "\n" )
 		end
@@ -324,7 +324,7 @@ function ucl.addGroup( name, allows, inherit_from, from_CAMI )
 	allows = allows or {}
 	inherit_from = inherit_from or "user"
 
-	if ucl.groups[ name ] then return error( "组已存在，无法再次添加 (" .. name .. ")", 2 ) end
+	if ucl.groups[ name ] then return error( "组已存在,无法再次添加 (" .. name .. ")", 2 ) end
 	if inherit_from then
 		if inherit_from == name then return error( "组不能从自身继承", 2 ) end
 		if not ucl.groups[ inherit_from ] then return error( "无效的继承组 (" .. tostring( inherit_from ) .. ")", 2 ) end
@@ -371,7 +371,7 @@ function ucl.groupAllow( name, access, revoke )
 	ULib.checkArg( 3, "ULib.ucl.groupAllow", {"nil","boolean"}, revoke )
 
 	if type( access ) == "string" then access = { access } end
-	if not ucl.groups[ name ] then return error( "更改访问权限的组不存在 (" .. name .. ")", 2 ) end
+	if not ucl.groups[ name ] then return error( "Group does not exist for changing access (" .. name .. ")", 2 ) end
 
 	local allow = ucl.groups[ name ].allow
 
@@ -444,7 +444,7 @@ function ucl.renameGroup( orig, new )
 
 	if orig == ULib.ACCESS_ALL then return error( "这组 (" .. orig .. ") 不能重命名!", 2 ) end
 	if not ucl.groups[ orig ] then return error( "重命名组不存在 (" .. orig .. ")", 2 ) end
-	if ucl.groups[ new ] then return error( "组已存在，无法重命名 (" .. new .. ")", 2 ) end
+	if ucl.groups[ new ] then return error( "组已存在,无法重命名 (" .. new .. ")", 2 ) end
 
 	for id, userInfo in pairs( ucl.users ) do
 		if userInfo.group == orig then
@@ -567,7 +567,7 @@ end
 function ucl.setGroupCanTarget( group, can_target )
 	ULib.checkArg( 1, "ULib.ucl.setGroupCanTarget", "string", group )
 	ULib.checkArg( 2, "ULib.ucl.setGroupCanTarget", {"nil","string"}, can_target )
-	if not ucl.groups[ group ] then return error( "组不存在 (" .. group .. ")", 2 ) end
+	if not ucl.groups[ group ] then return error( "Group does not exist (" .. group .. ")", 2 ) end
 
 	if ucl.groups[ group ].can_target == can_target then return end -- Nothing to change
 	local old = ucl.groups[ group ].can_target
@@ -600,8 +600,8 @@ end
 function ucl.removeGroup( name, from_CAMI )
 	ULib.checkArg( 1, "ULib.ucl.removeGroup", "string", name )
 
-	if name == ULib.ACCESS_ALL then return error( "这组 (" .. name .. ") 无法移除!", 2 ) end
-	if not ucl.groups[ name ] then return error( "要删除的组不存在 (" .. name .. ")", 2 ) end
+	if name == ULib.ACCESS_ALL then return error( "This group (" .. name .. ") cannot be removed!", 2 ) end
+	if not ucl.groups[ name ] then return error( "Group does not exist for removing (" .. name .. ")", 2 ) end
 
 	local inherits_from = ucl.groupInheritsFrom( name )
 	if inherits_from == ULib.ACCESS_ALL then inherits_from = nil end -- Easier
@@ -794,7 +794,7 @@ function ucl.userAllow( id, access, revoke, deny )
 	end
 
 	local userInfo = ucl.users[ id ] or ucl.authed[ uid ] -- Check both tables
-	if not userInfo then return error( "用于更改访问权限的用户 ID 不存在 (" .. id .. ")", 2 ) end
+	if not userInfo then return error( "User id does not exist for changing access (" .. id .. ")", 2 ) end
 
 	-- If they're connected but don't exist in the ULib user database, add them.
 	-- This can be the case if they're only using the default garrysmod file to pull in users.
@@ -895,13 +895,13 @@ function ucl.removeUser( id, from_CAMI )
 	id = id:upper() -- In case of steamid, needs to be upper case
 
 	local userInfo = ucl.users[ id ] or ucl.authed[ id ] -- Check both tables
-	if not userInfo then return error( "删除的用户 ID 不存在 (" .. id .. ")", 2 ) end
+	if not userInfo then return error( "User id does not exist for removing (" .. id .. ")", 2 ) end
 
 	local changed = false
 
 	if ucl.authed[ id ] and not ucl.users[ id ] then -- Different ids between offline and authed
 		local ply = ULib.getPlyByID( id )
-		if not ply then return error( "健全性检查失败!" ) end -- Should never be invalid
+		if not ply then return error( "SANITY CHECK FAILED!" ) end -- Should never be invalid
 
 		local ip = ULib.splitPort( ply:IPAddress() )
 		local checkIndexes = { ply:UniqueID(), ip, ply:SteamID() }
@@ -990,11 +990,7 @@ function ucl.registerAccess( access, groups, comment, category )
 			table.insert( ucl.groups[ group ].allow, access )
 		end
 
-		timer.Create( "ULibSaveGroups", 1, 1, function() -- 1 sec delay, 1 rep
-			ucl.saveGroups()
-			hook.Call( ULib.HOOK_UCLCHANGED )
-			hook.Call( ULib.HOOK_ACCESS_REGISTERED )
-		end )
+		timer.Create( "ULibSaveGroups", 1, 1, ucl.saveGroups ) -- 1 sec delay, 1 rep
 	end
 end
 

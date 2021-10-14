@@ -167,7 +167,7 @@ end
 ]]
 function ucl.getGroupCanTarget( group )
 	ULib.checkArg( 1, "ULib.ucl.getGroupCanTarget", "string", group )
-	if not ucl.groups[ group ] then return error( "Group does not exist (" .. group .. ")", 2 ) end
+	if not ucl.groups[ group ] then return error( "组不存在 (" .. group .. ")", 2 ) end
 
 	return ucl.groups[ group ].can_target
 end
@@ -208,7 +208,7 @@ local origIsAdmin = meta.IsAdmin
 	Function: Player:IsAdmin
 
 	Overwrite garry's IsAdmin function to check for membership in admin group. This is so if group "serverowner"
-	inherits from admin, this function will still return true when checking on a member belonging to the
+	inherits from superadmin, this function will still return true when checking on a member belonging to the
 	"serverowner" group.
 
 	Returns:
@@ -232,7 +232,7 @@ local origIsSuperAdmin = meta.IsSuperAdmin
 --[[
 	Function: Player:IsSuperAdmin
 
-	Overwrite garry's IsSuperAdmin function to check for membership in superadmin group. This is so if group "serverowner"
+	Overwrite garry's IsSuperAdmin function to check for membership in admin group. This is so if group "serverowner"
 	inherits from superadmin, this function will still return true when checking on a member belonging to the
 	"serverowner" group.
 

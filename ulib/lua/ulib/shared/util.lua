@@ -224,7 +224,7 @@ end
 ]]
 function ULib.execFile( f, queueName, noMount )
 	if not ULib.fileExists( f, noMount ) then
-		ULib.error( "使用无效文件调用 execFile! " .. f )
+		ULib.error( "Called execFile with invalid file! " .. f )
 		return
 	end
 
@@ -296,7 +296,7 @@ end
 ]]
 function ULib.execFileULib( f, safeMode, noMount )
 	if not ULib.fileExists( f, noMount ) then
-		ULib.error( "使用无效文件调用 execFileULi! " .. f )
+		ULib.error( "Called execFileULib with invalid file! " .. f )
 		return
 	end
 
@@ -332,9 +332,9 @@ function ULib.execStringULib( f, safeMode )
 			local cmdTable, commandName, argv = ULib.cmds.getCommandTableAndArgv( commandName, argv )
 
 			if not cmdTable then
-				Msg( "执行错误 " .. tostring( commandName ) .. "\n" )
+				Msg( "Error executing " .. tostring( commandName ) .. "\n" )
 			elseif cmdTable.__unsafe then
-				Msg( "不执行不安全的命令 " .. commandName .. "\n" )
+				Msg( "Not executing unsafe command " .. commandName .. "\n" )
 			else
 				ULib.cmds.execute( cmdTable, srvPly, commandName, argv )
 			end
@@ -380,7 +380,7 @@ function ULib.serialize( v )
 	elseif t == "nil" then
 		str = "nil"
 	else
-		ULib.error( "传递了一个无效的参数来序列化! (type: " .. t .. ")" )
+		ULib.error( "Passed an invalid parameter to serialize! (type: " .. t .. ")" )
 		return
 	end
 	return str
@@ -465,7 +465,7 @@ local function onThink()
 			remove = false
 			local b, e = pcall( stack[ 1 ].fn, unpack( stack[ 1 ], 1, stack[ 1 ].n ) )
 			if not b then
-				ErrorNoHalt( "ULib 队列错误: " .. tostring( e ) .. "\n" )
+				ErrorNoHalt( "ULib queue error: " .. tostring( e ) .. "\n" )
 			end
 			table.remove( stack, 1 ) -- Remove the first inserted item. This is FIFO
 		end
@@ -494,7 +494,7 @@ end
 ]]
 function ULib.queueFunctionCall( fn, ... )
 	if type( fn ) ~= "function" then
-		error( "queueFunctionCall 收到一个错误的函数", 2 )
+		error( "queueFunctionCall received a bad function", 2 )
 		return
 	end
 
@@ -519,7 +519,7 @@ end
 function ULib.namedQueueFunctionCall( queueName, fn, ... )
 	queueName = queueName or "defaultQueueName"
 	if type( fn ) ~= "function" then
-		error( "queueFunctionCall 收到一个错误的函数", 2 )
+		error( "queueFunctionCall received a bad function", 2 )
 		return
 	end
 
@@ -567,17 +567,25 @@ end
 --[[
 	Function: nameCheck
 
-	Calls all ULibPlayerNameChanged hooks if a player changes their name.
+	Checks all players' names at regular intervals to detect name changes. Calls ULibPlayerNameChanged if the name changed. *DO NOT CALL DIRECTLY*
 
 	Revisions:
 
 		2.20 - Initial
 ]]
-function ULib.nameCheck( data )
-	hook.Call( ULib.HOOK_PLAYER_NAME_CHANGED, nil, Player(data.userid), data.oldname, data.newname )
+function ULib.nameCheck()
+	local players = player.GetAll()
+	for _, ply in ipairs( players ) do
+		if not ply.ULibLastKnownName then ply.ULibLastKnownName = ply:Nick() end
+
+		if ply.ULibLastKnownName ~= ply:Nick() then
+			hook.Call( ULib.HOOK_PLAYER_NAME_CHANGED, nil, ply, ply.ULibLastKnownName, ply:Nick() )
+			ply.ULibLastKnownName = ply:Nick()
+		end
+	end
 end
-gameevent.Listen( "player_changename" )
-hook.Add( "player_changename", "ULibNameCheck", ULib.nameCheck )
+timer.Create( "ULibNameCheck", 1, 0, ULib.nameCheck )
+
 
 --[[
 	Function: getPlyByUID

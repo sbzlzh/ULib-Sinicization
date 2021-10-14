@@ -106,9 +106,9 @@ function Call( name, gm, ... )
 					--
 					-- If it's a string, it's cool
 					--
-					local a,b,c,d,e,f = v.fn( ... )
+					local a, b, c, d, e, f = v.fn( ... )
 					if ( a != nil && i > -2 && i < 2 ) then
-						return a,b,c,d,e,f
+						return a, b, c, d, e, f
 					end
 
 				else

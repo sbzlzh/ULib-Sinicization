@@ -96,8 +96,8 @@ function ULib.getBanMessage( steamid, banData, templateMessage )
 	templateMessage = templateMessage or ULib.BanMessage
 
 	local replacements = {
-		BANNED_BY = "(Unknown)",
-		BAN_START = "(Unknown)",
+		BANNED_BY = "(系统)",
+		BAN_START = "(系统)",
 		REASON = "(None given)",
 		TIME_LEFT = "(Permaban)",
 		STEAMID = steamid:gsub("%D", ""),
@@ -160,13 +160,13 @@ function ULib.kick( ply, reason, calling_ply )
 		(string.format( "%s(%s)", calling_ply:Nick(), calling_ply:SteamID() ) or "Console")
 	local steamid = ply:SteamID()
 	if reason and nick then
-		ply:Kick( string.format( "被踢出 %s - %s", nick, reason ) )
+		ply:Kick( string.format( "被踢 %s - %s", nick, reason ) )
 	elseif nick then
-		ply:Kick( "被踢出 " .. nick )
+		ply:Kick( "Kicked by " .. nick )
 	else
-		ply:Kick( reason or "[ULX] 从服务器踢出" )
+		ply:Kick( reason or "[ULX] 从服务器踢" )
 	end
-	hook.Call( ULib.HOOK_USER_KICKED, _, steamid, reason or "[ULX] 从服务器踢出", calling_ply )
+	hook.Call( ULib.HOOK_USER_KICKED, _, steamid, reason or "[ULX] 从服务器踢", calling_ply )
 end
 
 
@@ -231,7 +231,7 @@ function ULib.addBan( steamid, time, reason, name, admin )
 
 	local admin_name
 	if admin then
-		admin_name = "(Console)"
+		admin_name = "(控制台)"
 		if admin:IsValid() then
 			admin_name = string.format( "%s(%s)", admin:Name(), admin:SteamID() )
 		end
@@ -261,7 +261,7 @@ function ULib.addBan( steamid, time, reason, name, admin )
 	ULib.bans[ steamid ] = t
 
 	local strTime = time ~= 0 and ULib.secondsToStringTime( time*60 )
-	local shortReason = "Banned for " .. (strTime or "eternity")
+	local shortReason = "封禁 " .. (strTime or "eternity")
 	if reason then
 		shortReason = shortReason .. ": " .. reason
 	end
@@ -413,9 +413,9 @@ function ULib.refreshBans()
 	end
 
 	if err then
-		Msg( "封禁文件格式不正确.试图修复和备份原始\n" )
+		Msg( "Bans 文件格式不正确.试图修复和备份原始\n" )
 		if err then
-			Msg( "读取封禁文件时出错: " .. err .. "\n" )
+			Msg( "读取禁令文件时出错: " .. err .. "\n" )
 		end
 		Msg( "原始文件已备份到 " .. ULib.backupFile( ULib.BANS_FILE ) .. "\n" )
 		ULib.bans = {}
@@ -456,7 +456,7 @@ function ULib.refreshBans()
 				ULib.bans[ k ] = nil
 			end
 		else
-			Msg( "警告:错误的禁令数据被忽略,关键 = " .. tostring( k ) .. "\n" )
+			Msg( "警告:错误的禁令数据将被忽略, key = " .. tostring( k ) .. "\n" )
 			ULib.bans[ k ] = nil
 		end
 	end

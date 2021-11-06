@@ -244,11 +244,11 @@ function cmds.NumArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 	end
 
 	if self.min and num < self.min then
-		return nil, string.format( "specified " .. typeString .. " (%s) 低于您允许的最小值 %g", arg, self.min )
+		return nil, string.format( "specified " .. typeString .. " (%s) was below your allowed minimum value of %g", arg, self.min )
 	end
 
 	if self.max and num > self.max then
-		return nil, string.format( "specified " .. typeString .. " (%s) 高于您允许的最大值 %g", arg, self.max )
+		return nil, string.format( "specified " .. typeString .. " (%s) was above your allowed maximum value of %g", arg, self.max )
 	end
 
 	if table.HasValue( cmdInfo, cmds.round ) then
@@ -367,7 +367,7 @@ function cmds.BoolArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 	local desired = ULib.toBool( arg )
 
 	if self.restrictedTo ~= nil and desired ~= self.restrictedTo then
-		return nil, "你不能指定 " .. tostring( desired ) .. " 在这里"
+		return nil, "you are not allowed to specify " .. tostring( desired ) .. " here"
 	end
 
 	return desired
@@ -519,16 +519,16 @@ function cmds.PlayerArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 
 	local return_value, err_msg2 = hook.Call( ULib.HOOK_PLAYER_TARGET, _, ply, cmdInfo.cmd, target )
 	if return_value == false then
-		return nil, err_msg2 or "你不能定位这个人"
+		return nil, err_msg2 or "you cannot target this person"
 	elseif type( return_value ) == "Player" then
 		target = return_value
 	end
 
 	if return_value ~= true then -- Go through our "normal" restriction process
-		if not target then return nil, err_msg1 or "没有找到目标" end
+		if not target then return nil, err_msg1 or "no target found" end
 
 		if self.restrictedTargets == false or (self.restrictedTargets and not table.HasValue( self.restrictedTargets, target )) then
-			return nil, "你不能定位这个人"
+			return nil, "you cannot target this person"
 		end
 	end
 
@@ -630,17 +630,17 @@ function cmds.PlayersArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 
 	local return_value, err_msg = hook.Call( ULib.HOOK_PLAYER_TARGETS, _, ply, cmdInfo.cmd, targets )
 	if return_value == false then
-		return nil, err_msg or "您不能针对此人或这些人"
+		return nil, err_msg or "you cannot target this person or these persons"
 	elseif type( return_value ) == "table" then
 		if #return_value == 0 then
-			return nil, err_msg or "您不能针对此人或这些人"
+			return nil, err_msg or "you cannot target this person or these persons"
 		else
 			targets = return_value
 		end
 	end
 
 	if return_value ~= true then -- Go through our "normal" restriction process
-		if not targets then return nil, "未找到目标" end
+		if not targets then return nil, "no targets found" end
 
 		if self.restrictedTargets then
 			local i = 1
@@ -654,7 +654,7 @@ function cmds.PlayersArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 		end
 
 		if self.restrictedTargets == false or #targets == 0 then
-			return nil, "您不能针对此人或这些人"
+			return nil, "you cannot target this person or these persons"
 		end
 	end
 
@@ -779,7 +779,7 @@ function cmds.StringArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 	end
 
 	if arg:find( "%c" ) then
-		return nil, "字符串不能包含控制字符"
+		return nil, "string cannot contain control characters"
 	end
 
 	if table.HasValue( cmdInfo, cmds.restrictToCompletes ) or self.playerLevelRestriction then
@@ -787,7 +787,7 @@ function cmds.StringArg:parseAndValidate( ply, arg, cmdInfo, plyRestrictions )
 			if cmdInfo.error then
 				return nil, string.format( cmdInfo.error, arg ) -- If it has '%s', replace with arg
 			else
-				return nil, "无效字符串"
+				return nil, "invalid string"
 			end
 		end
 	end
@@ -866,13 +866,13 @@ local translatedCmds = cmds.translatedCmds -- To save my fingers, quicker access
 
 local function translateCmdCallback( ply, commandName, argv )
 	local cmd = translatedCmds[ commandName:lower() ]
-	if not cmd then return error( "无效命令!" ) end
+	if not cmd then return error( "Invalid command!" ) end
 
 	local isOpposite = string.lower( cmd.opposite or "" ) == string.lower( commandName )
 
 	local access, accessTag = ULib.ucl.query( ply, commandName )
 	if not access then
-		ULib.tsayError( ply, "您无权访问此命令, " .. ply:Nick() .. "!", true ) -- Print their name to intimidate them :)
+		ULib.tsayError( ply, "You don't have access to this command, " .. ply:Nick() .. "!", true ) -- Print their name to intimidate them :)
 		return
 	end
 
@@ -948,7 +948,7 @@ local function translateAutocompleteCallback( commandName, args )
 	-- This function is some of the most obfuscated code I've ever written... really sorry about this.
 	-- This function was the unfortunate victim of feeping creaturism
 	local cmd = translatedCmds[ commandName:lower() ]
-	if not cmd then return error( "命令无效!" ) end
+	if not cmd then return error( "Invalid command!" ) end
 
 	local isOpposite = string.lower( cmd.opposite or "" ) == string.lower( commandName )
 	local ply
@@ -958,7 +958,7 @@ local function translateAutocompleteCallback( commandName, args )
 		-- Assume listen server, seems to be the only time this can happen
 		ply = Entity( 1 ) -- Should be first player
 		if not ply or not ply:IsValid() or not ply:IsListenServerHost() then
-			return error( "假设失败!" )
+			return error( "Assumption fail!" )
 		end
 	end
 
@@ -1315,7 +1315,7 @@ function cmds.execute( cmdTable, ply, commandName, argv )
 	end
 
 	if not cmdTable.__fn then
-		return error( "尝试调用未定义的命令: " .. commandName )
+		return error( "Attempt to call undefined command: " .. commandName )
 	end
 
 	local return_value = hook.Call( ULib.HOOK_COMMAND_CALLED, _, ply, commandName, argv )
@@ -1332,7 +1332,7 @@ local function routedCommandCallback( ply, commandName, argv )
 		ply.ulib_threat_warned = nil
 	elseif ply.ulib_threat_level >= 100 then
 		if not ply.ulib_threat_warned then
-			ULib.tsay( ply, "您运行的命令过多,速度过快,请稍候再执行" )
+			ULib.tsay( ply, "You are running too many commands too quickly, please wait before executing more" )
 			ply.ulib_threat_warned = true
 		end
 		return

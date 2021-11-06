@@ -308,7 +308,7 @@ function ULib.getUser( target, enable_keywords, ply )
 			if #plyMatches == 0 then
 				return player
 			else
-				return false, "发现多个目标!请为目标选择更好的字符串. (EG，全称)"
+				return false, "发现多个目标!请为目标选择更好的字符串. (EG,全名)"
 			end
 		end
 	end
@@ -347,7 +347,7 @@ function ULib.getUser( target, enable_keywords, ply )
 			str = str .. ", " .. plyMatches[ i ]:Nick()
 		end
 
-		return false, "发现多个目标: " .. str .. ". 发现多个目标!请为目标选择更好的字符串. (EG，全称)"
+		return false, "发现多个目标: " .. str .. ". 请为目标选择更好的字符串. (EG,全称)"
 	end
 
 	return plyMatches[ 1 ]

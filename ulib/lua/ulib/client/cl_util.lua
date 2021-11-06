@@ -8,7 +8,7 @@ local function ULibRPC()
 	local fn_string = net.ReadString()
 	local args = net.ReadTable()
 	local success, fn = ULib.findVar( fn_string )
-	if not success or type( fn ) ~= "function" then return error( "收到错误的 RPC，无效的函数 (" .. tostring( fn_string ) .. ")!" ) end
+	if not success or type( fn ) ~= "function" then return error( "Received bad RPC, invalid function (" .. tostring( fn_string ) .. ")!" ) end
 
 	-- Since the table length operator can't always be trusted if there are holes in it, find the length by ourself
 	local max = 0
@@ -71,7 +71,7 @@ function ULib.umsgRcv( um, control )
 	elseif tv == ULib.TYPE_NIL then
 		return nil
 	else
-		ULib.error( "传递给 umsgRcv 的未知类型 - " .. tv )
+		ULib.error( "Unknown type passed to umsgRcv - " .. tv )
 	end
 
 	return ret

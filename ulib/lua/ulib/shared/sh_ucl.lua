@@ -167,7 +167,7 @@ end
 ]]
 function ucl.getGroupCanTarget( group )
 	ULib.checkArg( 1, "ULib.ucl.getGroupCanTarget", "string", group )
-	if not ucl.groups[ group ] then return error( "组不存在 (" .. group .. ")", 2 ) end
+	if not ucl.groups[ group ] then return error( "Group does not exist (" .. group .. ")", 2 ) end
 
 	return ucl.groups[ group ].can_target
 end

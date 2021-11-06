@@ -84,7 +84,7 @@ end
 function ULib.ropairs( t )
 	local mt = metatable_cache[ t ]
 	if mt==nil then
-		ULib.error( "'ropairs' 的错误参数 #1(预期为只读表,得到 " .. type(t) .. ")" )
+		ULib.error( "'ropairs' 的错误参数 #1 (预期为只读表,得到 " .. type(t) .. ")" )
 	end
 	return mt.__pairs()
 end

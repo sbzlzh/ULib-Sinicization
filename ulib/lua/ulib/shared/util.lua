@@ -296,7 +296,7 @@ end
 ]]
 function ULib.execFileULib( f, safeMode, noMount )
 	if not ULib.fileExists( f, noMount ) then
-		ULib.error( "Called execFileULib with invalid file! " .. f )
+		ULib.error( "使用无效文件调用 execFileULi! " .. f )
 		return
 	end
 
@@ -332,9 +332,9 @@ function ULib.execStringULib( f, safeMode )
 			local cmdTable, commandName, argv = ULib.cmds.getCommandTableAndArgv( commandName, argv )
 
 			if not cmdTable then
-				Msg( "Error executing " .. tostring( commandName ) .. "\n" )
+				Msg( "执行错误 " .. tostring( commandName ) .. "\n" )
 			elseif cmdTable.__unsafe then
-				Msg( "Not executing unsafe command " .. commandName .. "\n" )
+				Msg( "不执行不安全的命令 " .. commandName .. "\n" )
 			else
 				ULib.cmds.execute( cmdTable, srvPly, commandName, argv )
 			end
@@ -380,7 +380,7 @@ function ULib.serialize( v )
 	elseif t == "nil" then
 		str = "nil"
 	else
-		ULib.error( "Passed an invalid parameter to serialize! (type: " .. t .. ")" )
+		ULib.error( "传递了一个无效的参数来序列化! (type: " .. t .. ")" )
 		return
 	end
 	return str
@@ -465,7 +465,7 @@ local function onThink()
 			remove = false
 			local b, e = pcall( stack[ 1 ].fn, unpack( stack[ 1 ], 1, stack[ 1 ].n ) )
 			if not b then
-				ErrorNoHalt( "ULib queue error: " .. tostring( e ) .. "\n" )
+				ErrorNoHalt( "ULib 队列错误: " .. tostring( e ) .. "\n" )
 			end
 			table.remove( stack, 1 ) -- Remove the first inserted item. This is FIFO
 		end

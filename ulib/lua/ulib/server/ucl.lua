@@ -202,11 +202,11 @@ local function reloadGroups()
 	end
 
 	if needsBackup then
-		Msg( "组文件的格式不正确.试图修复和备份原始\n" )
+		Msg( "Groups file was not formatted correctly. Attempting to fix and backing up original\n" )
 		if err then
-			Msg( "读取组文件时出错: " .. err .. "\n" )
+			Msg( "Error while reading groups file was: " .. err .. "\n" )
 		end
-		Msg( "原始文件已备份到 " .. ULib.backupFile( ULib.UCL_GROUPS ) .. "\n" )
+		Msg( "Original file was backed up to " .. ULib.backupFile( ULib.UCL_GROUPS ) .. "\n" )
 		ucl.saveGroups()
 	end
 end
@@ -288,11 +288,11 @@ local function reloadUsers()
 	end
 
 	if needsBackup then
-		Msg( "用户文件格式不正确.试图修复和备份原始\n" )
+		Msg( "Users file was not formatted correctly. Attempting to fix and backing up original\n" )
 		if err then
-			Msg( "读取用户文件时出错: " .. err .. "\n" )
+			Msg( "Error while reading users file was: " .. err .. "\n" )
 		end
-		Msg( "原始文件已备份到 " .. ULib.backupFile( ULib.UCL_USERS ) .. "\n" )
+		Msg( "Original file was backed up to " .. ULib.backupFile( ULib.UCL_USERS ) .. "\n" )
 		ucl.saveUsers()
 	end
 end
@@ -324,10 +324,10 @@ function ucl.addGroup( name, allows, inherit_from, from_CAMI )
 	allows = allows or {}
 	inherit_from = inherit_from or "user"
 
-	if ucl.groups[ name ] then return error( "组已存在,无法再次添加 (" .. name .. ")", 2 ) end
+	if ucl.groups[ name ] then return error( "Group already exists, cannot add again (" .. name .. ")", 2 ) end
 	if inherit_from then
-		if inherit_from == name then return error( "组不能从自身继承", 2 ) end
-		if not ucl.groups[ inherit_from ] then return error( "无效的继承组 (" .. tostring( inherit_from ) .. ")", 2 ) end
+		if inherit_from == name then return error( "Group cannot inherit from itself", 2 ) end
+		if not ucl.groups[ inherit_from ] then return error( "Invalid group for inheritance (" .. tostring( inherit_from ) .. ")", 2 ) end
 	end
 
 	-- Lower case'ify
@@ -442,9 +442,9 @@ function ucl.renameGroup( orig, new )
 	ULib.checkArg( 1, "ULib.ucl.renameGroup", "string", orig )
 	ULib.checkArg( 2, "ULib.ucl.renameGroup", "string", new )
 
-	if orig == ULib.ACCESS_ALL then return error( "这组 (" .. orig .. ") 不能重命名!", 2 ) end
-	if not ucl.groups[ orig ] then return error( "重命名组不存在 (" .. orig .. ")", 2 ) end
-	if ucl.groups[ new ] then return error( "组已存在,无法重命名 (" .. new .. ")", 2 ) end
+	if orig == ULib.ACCESS_ALL then return error( "This group (" .. orig .. ") cannot be renamed!", 2 ) end
+	if not ucl.groups[ orig ] then return error( "Group does not exist for renaming (" .. orig .. ")", 2 ) end
+	if ucl.groups[ new ] then return error( "Group already exists, cannot rename (" .. new .. ")", 2 ) end
 
 	for id, userInfo in pairs( ucl.users ) do
 		if userInfo.group == orig then
@@ -509,9 +509,9 @@ function ucl.setGroupInheritance( group, inherit_from, from_CAMI )
 	ULib.checkArg( 2, "ULib.ucl.renameGroup", {"nil","string"}, inherit_from )
 	inherit_from = inherit_from or "user"
 
-	if group == ULib.ACCESS_ALL then return error( "这组 (" .. group .. ") 不能改变它的继承!", 2 ) end
-	if not ucl.groups[ group ] then return error( "组不存在 (" .. group .. ")", 2 ) end
-	if inherit_from and not ucl.groups[ inherit_from ] then return error( "继承组不存在 (" .. inherit_from .. ")", 2 ) end
+	if group == ULib.ACCESS_ALL then return error( "This group (" .. group .. ") cannot have its inheritance changed!", 2 ) end
+	if not ucl.groups[ group ] then return error( "Group does not exist (" .. group .. ")", 2 ) end
+	if inherit_from and not ucl.groups[ inherit_from ] then return error( "Group for inheritance does not exist (" .. inherit_from .. ")", 2 ) end
 
 	-- Check for cycles
 	local old_inherit = ucl.groups[ group ].inherit_from
@@ -520,7 +520,7 @@ function ucl.setGroupInheritance( group, inherit_from, from_CAMI )
 	while groupCheck do
 		if groupCheck == group then -- Got back to ourselves. This is bad.
 			ucl.groups[ group ].inherit_from = old_inherit -- Set it back
-			error( "更改组 \"" .. group .. "\" 继承到 \"" .. inherit_from .. "\" 会造成循环继承.中止.", 2 )
+			error( "Changing group \"" .. group .. "\" inheritance to \"" .. inherit_from .. "\" would cause cyclical inheritance. Aborting.", 2 )
 		end
 		groupCheck = ucl.groupInheritsFrom( groupCheck )
 	end

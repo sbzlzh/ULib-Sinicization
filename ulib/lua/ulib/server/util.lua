@@ -236,7 +236,7 @@ local function clientChangeCvar( ply, command, argv )
 
 	local access = repcvars[ sv_cvar ].access
 	if not ply:query( access ) then
-		ULib.tsayError( ply, "You do not have access to this cvar (" .. sv_cvar .. "), " .. ply:Nick() .. "." )
+		ULib.tsayError( ply, "您无权访问此 cvar (" .. sv_cvar .. "), " .. ply:Nick() .. "." )
 		umsg.Start( "ulib_repChangeCvar", ply )
 			umsg.Entity( ply )
 			umsg.String( repcvars[ sv_cvar ].cl_cvar )

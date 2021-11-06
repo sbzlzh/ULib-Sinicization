@@ -252,9 +252,9 @@ end
 ]]
 function ULib.error( s )
 	if CLIENT then
-		Msg( "[LC ULIB 错误] " .. s .. "\n" )
+		Msg( "[LC ULIB ERROR] " .. s .. "\n" )
 	else
-		Msg( "[LC ULIB 错误] " .. s .. "\n" )
+		Msg( "[LS ULIB ERROR] " .. s .. "\n" )
 	end
 end
 

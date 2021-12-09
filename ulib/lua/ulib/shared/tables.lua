@@ -22,7 +22,7 @@ local function make_getter( real_table )
 end
 
 local function setter()
-	ULib.error( "尝试修改只读表!" )
+	ULib.error( "Attempt to modify read-only table!" )
 end
 
 local function make_pairs( real_table )
@@ -84,7 +84,7 @@ end
 function ULib.ropairs( t )
 	local mt = metatable_cache[ t ]
 	if mt==nil then
-		ULib.error( "'ropairs' 的错误参数 #1 (预期为只读表,得到 " .. type(t) .. ")" )
+		ULib.error( "'ropairs' 的错误参数 #1 (需要只读表，得到 " .. type(t) .. ")" )
 	end
 	return mt.__pairs()
 end

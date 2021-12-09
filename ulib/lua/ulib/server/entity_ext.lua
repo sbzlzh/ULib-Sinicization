@@ -100,7 +100,7 @@ local function tool( ply, tr, toolmode, second )
 			-- Loop through all the entities in the system
 			for _, ent in pairs( ConstrainedEntities ) do
 				if ent.NoDeleting then
-					ULib.tsay( ply, "You cannot use a right click delete on this ent because it is constrained to a non-deleteable entity." )
+					ULib.tsay( ply, "您不能在此实体上使用右键单击删除,因为它被限制为不可删除的实体." )
 					return false
 				end
 			end

@@ -6,12 +6,12 @@
 
 -- ULib default ban message
 ULib.BanMessage = [[
--------===== [ 你已封禁 ] =====-------
+-------===== [ BANNED ] =====-------
 
----= 原因 =---
+---= Reason =---
 {{REASON}}
 
----= 剩余时间 =---
+---= Time Left =---
 {{TIME_LEFT}} ]]
 
 function ULib.getBanMessage( steamid, banData, templateMessage )
@@ -20,9 +20,9 @@ function ULib.getBanMessage( steamid, banData, templateMessage )
 	templateMessage = templateMessage or ULib.BanMessage
 
 	local replacements = {
-		BANNED_BY = "(未知)",
-		BAN_START = "(未知)",
-		REASON = "(没给予)",
+		BANNED_BY = "(系统)",
+		BAN_START = "(系统)",
+		REASON = "(无理由)",
 		TIME_LEFT = "(永久)",
 		STEAMID = steamid:gsub("%D", ""),
 		STEAMID64 = util.SteamIDTo64( steamid ),
@@ -58,7 +58,7 @@ local function checkBan( steamid64, ip, password, clpassword, name )
 	if not banData.admin and not banData.reason and not banData.unban and not banData.time then return end
 
 	local message = ULib.getBanMessage( steamid )
-	Msg(string.format("%s (%s)<%s> 被 ULib 踢了，因为他们在禁令名单上\n", name, steamid, ip))
+	Msg(string.format("%s (%s)<%s> 被 ULib 踢了,因为他们在禁令名单上\n", name, steamid, ip))
 	return false, message
 end
 hook.Add( "CheckPassword", "ULibBanCheck", checkBan, HOOK_LOW )
@@ -148,7 +148,7 @@ function ULib.addBan( steamid, time, reason, name, admin )
 
 	local admin_name
 	if admin then
-		admin_name = "(Console)"
+		admin_name = "(控制台)"
 		if admin:IsValid() then
 			admin_name = string.format( "%s(%s)", admin:Name(), admin:SteamID() )
 		end
@@ -308,7 +308,7 @@ function ULib.refreshBans()
 		end
 		sql.Commit()
 
-		Msg( "[ULib] 升级封禁存储方式，将之前封禁文件移至 " .. ULib.backupFile( LEGACY_BANS_FILE ) .. "\n" )
+		Msg( "[ULib] 升级封禁存储方式,将之前封禁文件移至 " .. ULib.backupFile( LEGACY_BANS_FILE ) .. "\n" )
 		ULib.fileDelete( LEGACY_BANS_FILE )
 		legacy_bans = nil
 	end

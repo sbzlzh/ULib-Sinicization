@@ -50,7 +50,7 @@ function ucl.query( ply, access, hide )
 		unique_id = "1" -- Fix garry's bug
 	end
 
-	if not ucl.authed[ unique_id ] then return error( "[ULIB] 未授权播放器" ) end -- Sanity check
+	if not ucl.authed[ unique_id ] then return error( "[ULIB] Unauthed player" ) end -- Sanity check
 	local playerInfo = ucl.authed[ unique_id ]
 
 	-- First check the player's info
@@ -62,7 +62,7 @@ function ucl.query( ply, access, hide )
 	local group = ply:GetUserGroup()
 	while group do -- While group is not nil
 		local groupInfo = ucl.groups[ group ]
-		if not groupInfo then return error( "[ULib] 玩家 " .. ply:Nick() .. " 有一个无效的组 (" .. group .. "), 中止.修改 ULib 文件时请小心!" ) end
+		if not groupInfo then return error( "[ULib] Player " .. ply:Nick() .. " has an invalid group (" .. group .. "), aborting. Please be careful when modifying the ULib files!" ) end
 		if table.HasValue( groupInfo.allow, access ) then return true end
 		if groupInfo.allow[ access ] then return true, groupInfo.allow[ access ] end
 
@@ -167,7 +167,7 @@ end
 ]]
 function ucl.getGroupCanTarget( group )
 	ULib.checkArg( 1, "ULib.ucl.getGroupCanTarget", "string", group )
-	if not ucl.groups[ group ] then return error( "组不存在 (" .. group .. ")", 2 ) end
+	if not ucl.groups[ group ] then return error( "Group does not exist (" .. group .. ")", 2 ) end
 
 	return ucl.groups[ group ].can_target
 end

@@ -47,15 +47,7 @@
 local ucl = ULib.ucl -- Make it easier for us to refer to
 
 local defaultGroupsText = -- To populate initially or when the user deletes it
-[["operator"
-{
-	"allow"
-	{
-	}
-	"can_target"    "!%admin"
-}
-
-"admin"
+[["admin"
 {
 	"allow"
 	{
@@ -202,11 +194,11 @@ local function reloadGroups()
 	end
 
 	if needsBackup then
-		Msg( "组文件的格式不正确.试图修复和备份原始\n" )
+		Msg( "Groups file was not formatted correctly. Attempting to fix and backing up original\n" )
 		if err then
-			Msg( "读取组文件时出错: " .. err .. "\n" )
+			Msg( "Error while reading groups file was: " .. err .. "\n" )
 		end
-		Msg( "原始文件已备份到 " .. ULib.backupFile( ULib.UCL_GROUPS ) .. "\n" )
+		Msg( "Original file was backed up to " .. ULib.backupFile( ULib.UCL_GROUPS ) .. "\n" )
 		ucl.saveGroups()
 	end
 end
@@ -288,11 +280,11 @@ local function reloadUsers()
 	end
 
 	if needsBackup then
-		Msg( "用户文件格式不正确.试图修复和备份原始\n" )
+		Msg( "Users file was not formatted correctly. Attempting to fix and backing up original\n" )
 		if err then
-			Msg( "读取用户文件时出错: " .. err .. "\n" )
+			Msg( "Error while reading users file was: " .. err .. "\n" )
 		end
-		Msg( "原始文件已备份到 " .. ULib.backupFile( ULib.UCL_USERS ) .. "\n" )
+		Msg( "Original file was backed up to " .. ULib.backupFile( ULib.UCL_USERS ) .. "\n" )
 		ucl.saveUsers()
 	end
 end
@@ -324,10 +316,10 @@ function ucl.addGroup( name, allows, inherit_from, from_CAMI )
 	allows = allows or {}
 	inherit_from = inherit_from or "user"
 
-	if ucl.groups[ name ] then return error( "组已存在,无法再次添加 (" .. name .. ")", 2 ) end
+	if ucl.groups[ name ] then return error( "Group already exists, cannot add again (" .. name .. ")", 2 ) end
 	if inherit_from then
-		if inherit_from == name then return error( "组不能从自身继承", 2 ) end
-		if not ucl.groups[ inherit_from ] then return error( "无效的继承组 (" .. tostring( inherit_from ) .. ")", 2 ) end
+		if inherit_from == name then return error( "Group cannot inherit from itself", 2 ) end
+		if not ucl.groups[ inherit_from ] then return error( "Invalid group for inheritance (" .. tostring( inherit_from ) .. ")", 2 ) end
 	end
 
 	-- Lower case'ify
@@ -371,7 +363,7 @@ function ucl.groupAllow( name, access, revoke )
 	ULib.checkArg( 3, "ULib.ucl.groupAllow", {"nil","boolean"}, revoke )
 
 	if type( access ) == "string" then access = { access } end
-	if not ucl.groups[ name ] then return error( "更改访问权限的组不存在 (" .. name .. ")", 2 ) end
+	if not ucl.groups[ name ] then return error( "Group does not exist for changing access (" .. name .. ")", 2 ) end
 
 	local allow = ucl.groups[ name ].allow
 
@@ -509,9 +501,9 @@ function ucl.setGroupInheritance( group, inherit_from, from_CAMI )
 	ULib.checkArg( 2, "ULib.ucl.renameGroup", {"nil","string"}, inherit_from )
 	inherit_from = inherit_from or "user"
 
-	if group == ULib.ACCESS_ALL then return error( "这个组 (" .. group .. ") 不能改变它的继承!", 2 ) end
-	if not ucl.groups[ group ] then return error( "组不存在 (" .. group .. ")", 2 ) end
-	if inherit_from and not ucl.groups[ inherit_from ] then return error( "继承组不存在 (" .. inherit_from .. ")", 2 ) end
+	if group == ULib.ACCESS_ALL then return error( "This group (" .. group .. ") cannot have its inheritance changed!", 2 ) end
+	if not ucl.groups[ group ] then return error( "Group does not exist (" .. group .. ")", 2 ) end
+	if inherit_from and not ucl.groups[ inherit_from ] then return error( "Group for inheritance does not exist (" .. inherit_from .. ")", 2 ) end
 
 	-- Check for cycles
 	local old_inherit = ucl.groups[ group ].inherit_from
@@ -520,7 +512,7 @@ function ucl.setGroupInheritance( group, inherit_from, from_CAMI )
 	while groupCheck do
 		if groupCheck == group then -- Got back to ourselves. This is bad.
 			ucl.groups[ group ].inherit_from = old_inherit -- Set it back
-			error( "更改组 \"" .. group .. "\" 继承到 \"" .. inherit_from .. "\" 会造成循环继承.中止.", 2 )
+			error( "Changing group \"" .. group .. "\" inheritance to \"" .. inherit_from .. "\" would cause cyclical inheritance. Aborting.", 2 )
 		end
 		groupCheck = ucl.groupInheritsFrom( groupCheck )
 	end
@@ -567,7 +559,7 @@ end
 function ucl.setGroupCanTarget( group, can_target )
 	ULib.checkArg( 1, "ULib.ucl.setGroupCanTarget", "string", group )
 	ULib.checkArg( 2, "ULib.ucl.setGroupCanTarget", {"nil","string"}, can_target )
-	if not ucl.groups[ group ] then return error( "组不存在 (" .. group .. ")", 2 ) end
+	if not ucl.groups[ group ] then return error( "Group does not exist (" .. group .. ")", 2 ) end
 
 	if ucl.groups[ group ].can_target == can_target then return end -- Nothing to change
 	local old = ucl.groups[ group ].can_target
@@ -600,8 +592,8 @@ end
 function ucl.removeGroup( name, from_CAMI )
 	ULib.checkArg( 1, "ULib.ucl.removeGroup", "string", name )
 
-	if name == ULib.ACCESS_ALL then return error( "这个组 (" .. name .. ") 无法删除!", 2 ) end
-	if not ucl.groups[ name ] then return error( "要删除的组不存在 (" .. name .. ")", 2 ) end
+	if name == ULib.ACCESS_ALL then return error( "This group (" .. name .. ") cannot be removed!", 2 ) end
+	if not ucl.groups[ name ] then return error( "Group does not exist for removing (" .. name .. ")", 2 ) end
 
 	local inherits_from = ucl.groupInheritsFrom( name )
 	if inherits_from == ULib.ACCESS_ALL then inherits_from = nil end -- Easier
@@ -721,7 +713,7 @@ function ucl.addUser( id, allows, denies, group, from_CAMI )
 	denies = denies or {}
 	if allows == ULib.DEFAULT_GRANT_ACCESS.allow then allows = table.Copy( allows ) end -- Otherwise we'd be changing all guest access
 	if denies == ULib.DEFAULT_GRANT_ACCESS.deny then denies = table.Copy( denies ) end -- Otherwise we'd be changing all guest access
-	if group and not ucl.groups[ group ] then return error( "添加用户的组不存在 (" .. group .. ")", 2 ) end
+	if group and not ucl.groups[ group ] then return error( "Group does not exist for adding user to (" .. group .. ")", 2 ) end
 
 	-- Lower case'ify
 	for k, v in ipairs( allows ) do allows[ k ] = v end
@@ -794,7 +786,7 @@ function ucl.userAllow( id, access, revoke, deny )
 	end
 
 	local userInfo = ucl.users[ id ] or ucl.authed[ uid ] -- Check both tables
-	if not userInfo then return error( "用于更改访问权限的用户 ID 不存在 (" .. id .. ")", 2 ) end
+	if not userInfo then return error( "User id does not exist for changing access (" .. id .. ")", 2 ) end
 
 	-- If they're connected but don't exist in the ULib user database, add them.
 	-- This can be the case if they're only using the default garrysmod file to pull in users.
@@ -895,13 +887,13 @@ function ucl.removeUser( id, from_CAMI )
 	id = id:upper() -- In case of steamid, needs to be upper case
 
 	local userInfo = ucl.users[ id ] or ucl.authed[ id ] -- Check both tables
-	if not userInfo then return error( "删除的用户 ID 不存在 (" .. id .. ")", 2 ) end
+	if not userInfo then return error( "User id does not exist for removing (" .. id .. ")", 2 ) end
 
 	local changed = false
 
 	if ucl.authed[ id ] and not ucl.users[ id ] then -- Different ids between offline and authed
 		local ply = ULib.getPlyByID( id )
-		if not ply then return error( "健全性检查失败!" ) end -- Should never be invalid
+		if not ply then return error( "SANITY CHECK FAILED!" ) end -- Should never be invalid
 
 		local ip = ULib.splitPort( ply:IPAddress() )
 		local checkIndexes = { ply:UniqueID(), ip, ply:SteamID() }

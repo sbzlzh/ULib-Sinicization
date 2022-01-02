@@ -160,7 +160,7 @@ end
 ]]
 function ULib.getUsers( target, enable_keywords, ply )
 	if target == "" then
-		return false, "未指定目标!"
+		return false, "No target specified!"
 	end
 
 	local players = player.GetAll()
@@ -199,7 +199,7 @@ function ULib.getUsers( target, enable_keywords, ply )
 						if ply:IsValid() then
 							table.insert( tmpTargets, ply )
 						elseif not negate then
-							return false, "您不能从控制台定位自己!"
+							return false, "You cannot target yourself from console!"
 						end
 					end
 				elseif piece:sub( 1, 1 ) == "@" then
@@ -288,7 +288,7 @@ function ULib.getUsers( target, enable_keywords, ply )
 	end
 
 	if #finalTable < 1 then
-		return false, "未找到目标或目标具有免疫力!"
+		return false, "No target found or target has immunity!"
 	end
 
 	return finalTable
@@ -337,7 +337,7 @@ function ULib.getUser( target, enable_keywords, ply )
 			if #plyMatches == 0 then
 				return player
 			else
-				return false, "发现多个目标!请为目标选择更好的字符串. (EG，全称)"
+				return false, "Found multiple targets! Please choose a better string for the target. (EG, the whole name)"
 			end
 		end
 	end
@@ -347,12 +347,12 @@ function ULib.getUser( target, enable_keywords, ply )
 			if ply:IsValid() then
 				return ply
 			else
-				return false, "您不能从控制台定位自己!"
+				return false, "You cannot target yourself from console!"
 			end
 		elseif IsValid( ply ) and target == "@" then
 			local player = ULib.getPicker( ply )
 			if not player then
-				return false, "在选择器中找不到玩家"
+				return false, "No player found in the picker"
 			else
 				return player
 			end
@@ -369,14 +369,14 @@ function ULib.getUser( target, enable_keywords, ply )
 	end
 
 	if #plyMatches == 0 then
-		return false, "未找到目标或目标具有免疫力!"
+		return false, "No target found or target has immunity!"
 	elseif #plyMatches > 1 then
 		local str = plyMatches[ 1 ]:Nick()
 		for i=2, #plyMatches do
 			str = str .. ", " .. plyMatches[ i ]:Nick()
 		end
 
-		return false, "发现多个目标: " .. str .. ". 请为目标选择更好的字符串. (EG，全称)"
+		return false, "Found multiple targets: " .. str .. ". Please choose a better string for the target. (EG, the whole name)"
 	end
 
 	return plyMatches[ 1 ]

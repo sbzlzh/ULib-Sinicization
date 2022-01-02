@@ -22,8 +22,8 @@ function ULib.getBanMessage( steamid, banData, templateMessage )
 	local replacements = {
 		BANNED_BY = "(系统)",
 		BAN_START = "(系统)",
-		REASON = "(无理由)",
-		TIME_LEFT = "(永久)",
+		REASON = "(None given)",
+		TIME_LEFT = "(Permaban)",
 		STEAMID = steamid:gsub("%D", ""),
 		STEAMID64 = util.SteamIDTo64( steamid ),
 	}
@@ -148,7 +148,7 @@ function ULib.addBan( steamid, time, reason, name, admin )
 
 	local admin_name
 	if admin then
-		admin_name = "(控制台)"
+		admin_name = "(Console)"
 		if admin:IsValid() then
 			admin_name = string.format( "%s(%s)", admin:Name(), admin:SteamID() )
 		end
@@ -218,7 +218,7 @@ end
 		v2.10 - Initial
 ]]
 function ULib.unban( steamid, admin )
-	game.ConsoleCommand( "removeid " .. steamid .. ";writeid\n" ) -- Remove from srcds in case it was stored there
+	game.ConsoleCommand( "删除id " .. steamid .. ";写入ID\n" ) -- Remove from srcds in case it was stored there
 
 	--ULib banlist
 	ULib.bans[ steamid ] = nil
@@ -308,7 +308,7 @@ function ULib.refreshBans()
 		end
 		sql.Commit()
 
-		Msg( "[ULib] 升级封禁存储方式,将之前封禁文件移至 " .. ULib.backupFile( LEGACY_BANS_FILE ) .. "\n" )
+		Msg( "[ULib] 升级封禁存储方式,将之前的封禁文件移至 " .. ULib.backupFile( LEGACY_BANS_FILE ) .. "\n" )
 		ULib.fileDelete( LEGACY_BANS_FILE )
 		legacy_bans = nil
 	end

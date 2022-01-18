@@ -148,7 +148,7 @@ function ULib.addBan( steamid, time, reason, name, admin )
 
 	local admin_name
 	if admin then
-		admin_name = "(Console)"
+		admin_name = "(控制台)"
 		if admin:IsValid() then
 			admin_name = string.format( "%s(%s)", admin:Name(), admin:SteamID() )
 		end

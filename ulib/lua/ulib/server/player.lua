@@ -98,7 +98,7 @@ end
 ]]
 function ULib.kick( ply, reason, calling_ply )
 	local nick = calling_ply and calling_ply:IsValid() and
-		(string.format( "%s(%s)", calling_ply:Nick(), calling_ply:SteamID() ) or "Console")
+		(string.format( "%s(%s)", calling_ply:Nick(), calling_ply:SteamID() ) or "控制台")
 	local steamid = ply:SteamID()
 	if reason and nick then
 		ply:Kick( string.format( "Kicked by %s - %s", nick, reason ) )

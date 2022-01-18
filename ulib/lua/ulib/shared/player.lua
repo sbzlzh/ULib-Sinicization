@@ -199,7 +199,7 @@ function ULib.getUsers( target, enable_keywords, ply )
 						if ply:IsValid() then
 							table.insert( tmpTargets, ply )
 						elseif not negate then
-							return false, "You cannot target yourself from console!"
+							return false, "您不能从控制台将自己作为目标!"
 						end
 					end
 				elseif piece:sub( 1, 1 ) == "@" then
@@ -347,7 +347,7 @@ function ULib.getUser( target, enable_keywords, ply )
 			if ply:IsValid() then
 				return ply
 			else
-				return false, "You cannot target yourself from console!"
+				return false, "您不能从控制台将自己作为目标!"
 			end
 		elseif IsValid( ply ) and target == "@" then
 			local player = ULib.getPicker( ply )

@@ -60,7 +60,7 @@ local function sayCmdCheck( ply, strText, bTeam )
 		end
 
 		if not ULib.ucl.query( ply, data.access ) then
-			ULib.tsay( ply, "You do not have access to this command, " .. ply:Nick() .. "." )
+			ULib.tsay( ply, "您无权访问此命令, " .. ply:Nick() .. "." )
 			-- Print their name to intimidate them :)
 			return "" -- Block from appearing
 		end

@@ -20,10 +20,10 @@ function ULib.getBanMessage( steamid, banData, templateMessage )
 	templateMessage = templateMessage or ULib.BanMessage
 
 	local replacements = {
-		BANNED_BY = "(系统)",
-		BAN_START = "(系统)",
-		REASON = "(None given)",
-		TIME_LEFT = "(Permaban)",
+		BANNED_BY = "系统",
+		BAN_START = "系统",
+		REASON = "未说明",
+		TIME_LEFT = "永久",
 		STEAMID = steamid:gsub("%D", ""),
 		STEAMID64 = util.SteamIDTo64( steamid ),
 	}

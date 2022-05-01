@@ -332,9 +332,9 @@ function ULib.execStringULib( f, safeMode )
 			local cmdTable, commandName, argv = ULib.cmds.getCommandTableAndArgv( commandName, argv )
 
 			if not cmdTable then
-				Msg( "Error executing " .. tostring( commandName ) .. "\n" )
+				Msg( "错误执行 " .. tostring( commandName ) .. "\n" )
 			elseif cmdTable.__unsafe then
-				Msg( "Not executing unsafe command " .. commandName .. "\n" )
+				Msg( "不执行不安全命令 " .. commandName .. "\n" )
 			else
 				ULib.cmds.execute( cmdTable, srvPly, commandName, argv )
 			end

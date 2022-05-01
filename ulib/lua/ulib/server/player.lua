@@ -98,16 +98,16 @@ end
 ]]
 function ULib.kick( ply, reason, calling_ply )
 	local nick = calling_ply and calling_ply:IsValid() and
-		(string.format( "%s(%s)", calling_ply:Nick(), calling_ply:SteamID() ) or "控制台")
+		(string.format( "%s(%s)", calling_ply:Nick(), calling_ply:SteamID() ) or "Console")
 	local steamid = ply:SteamID()
 	if reason and nick then
-		ply:Kick( string.format( "Kicked by %s - %s", nick, reason ) )
+		ply:Kick( string.format( "被踢出 %s - %s", nick, reason ) )
 	elseif nick then
-		ply:Kick( "Kicked by " .. nick )
+		ply:Kick( "被踢出 " .. nick )
 	else
-		ply:Kick( reason or "[ULX] Kicked from server" )
+		ply:Kick( reason or "[ULX] 被踢出服务器" )
 	end
-	hook.Call( ULib.HOOK_USER_KICKED, _, steamid, reason or "[ULX] Kicked from server", calling_ply )
+	hook.Call( ULib.HOOK_USER_KICKED, _, steamid, reason or "[ULX] 被踢出服务器", calling_ply )
 end
 
 

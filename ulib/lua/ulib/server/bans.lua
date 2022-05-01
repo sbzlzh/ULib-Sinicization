@@ -58,7 +58,7 @@ local function checkBan( steamid64, ip, password, clpassword, name )
 	if not banData.admin and not banData.reason and not banData.unban and not banData.time then return end
 
 	local message = ULib.getBanMessage( steamid )
-	Msg(string.format("%s (%s)<%s> 被 ULib 踢了,因为他们在禁令名单上\n", name, steamid, ip))
+	Msg(string.format("%s (%s)<%s> was kicked by ULib because they are on the ban list\n", name, steamid, ip))
 	return false, message
 end
 hook.Add( "CheckPassword", "ULibBanCheck", checkBan, HOOK_LOW )
@@ -148,7 +148,7 @@ function ULib.addBan( steamid, time, reason, name, admin )
 
 	local admin_name
 	if admin then
-		admin_name = "(控制台)"
+		admin_name = "(Console)"
 		if admin:IsValid() then
 			admin_name = string.format( "%s(%s)", admin:Name(), admin:SteamID() )
 		end
@@ -218,7 +218,7 @@ end
 		v2.10 - Initial
 ]]
 function ULib.unban( steamid, admin )
-	game.ConsoleCommand( "删除id " .. steamid .. ";写入ID\n" ) -- Remove from srcds in case it was stored there
+	game.ConsoleCommand( "removeid " .. steamid .. ";writeid\n" ) -- Remove from srcds in case it was stored there
 
 	--ULib banlist
 	ULib.bans[ steamid ] = nil
@@ -308,7 +308,7 @@ function ULib.refreshBans()
 		end
 		sql.Commit()
 
-		Msg( "[ULib] 升级封禁存储方式,将之前的封禁文件移至 " .. ULib.backupFile( LEGACY_BANS_FILE ) .. "\n" )
+		Msg( "[ULib] Upgraded bans storage method, moving previous bans file to " .. ULib.backupFile( LEGACY_BANS_FILE ) .. "\n" )
 		ULib.fileDelete( LEGACY_BANS_FILE )
 		legacy_bans = nil
 	end

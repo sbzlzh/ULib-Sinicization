@@ -47,13 +47,21 @@
 local ucl = ULib.ucl -- Make it easier for us to refer to
 
 local defaultGroupsText = -- To populate initially or when the user deletes it
-[["admin"
+[["operator"
+{
+	"allow"
+	{
+	}
+	"can_target"    "!%admin"
+}
+
+"admin"
 {
 	"allow"
 	{
 	}
 	"inherit_from"	"operator"
-	"can_target"    "!%admin"
+	"can_target"    "!%superadmin"
 }
 
 "superadmin"

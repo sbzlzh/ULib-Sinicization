@@ -8,7 +8,7 @@ local function ULibRPC()
 	local fn_string = net.ReadString()
 	local args = net.ReadTable()
 	local success, fn = ULib.findVar( fn_string )
-	if not success or type( fn ) ~= "function" then return error( "收到错误的 RPC,无效的函数 (" .. tostring( fn_string ) .. ")!" ) end
+	if not success or type( fn ) ~= "function" then return error( "Received bad RPC, invalid function (" .. tostring( fn_string ) .. ")!" ) end
 
 	-- Since the table length operator can't always be trusted if there are holes in it, find the length by ourself
 	local max = 0
@@ -29,7 +29,7 @@ net.Receive( "URPC", ULibRPC )
 net.Receive( "ulib_sound", function( ln )
 	local str = net.ReadString()
 	if not ULib.fileExists( "sound/" .. str ) then
-		Msg( "[LC ULib ERROR] 接收到无效声音\n" )
+		Msg( "[LC ULib ERROR] Received invalid sound\n" )
 		return
 	end
 

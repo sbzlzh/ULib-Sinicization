@@ -160,7 +160,7 @@ end
 ]]
 function ULib.getUsers( target, enable_keywords, ply )
 	if target == "" then
-		return false, "No target specified!"
+		return false, "未指定目标!"
 	end
 
 	local players = player.GetAll()
@@ -199,7 +199,7 @@ function ULib.getUsers( target, enable_keywords, ply )
 						if ply:IsValid() then
 							table.insert( tmpTargets, ply )
 						elseif not negate then
-							return false, "您不能从控制台将自己作为目标!"
+							return false, "你不能从控制台瞄准你自己!"
 						end
 					end
 				elseif piece:sub( 1, 1 ) == "@" then
@@ -347,12 +347,12 @@ function ULib.getUser( target, enable_keywords, ply )
 			if ply:IsValid() then
 				return ply
 			else
-				return false, "您不能从控制台将自己作为目标!"
+				return false, "你不能从控制台瞄准你自己!"
 			end
 		elseif IsValid( ply ) and target == "@" then
 			local player = ULib.getPicker( ply )
 			if not player then
-				return false, "No player found in the picker"
+				return false, "在选取器中没有找到玩家"
 			else
 				return player
 			end

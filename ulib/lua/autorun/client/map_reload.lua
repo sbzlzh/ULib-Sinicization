@@ -10,7 +10,7 @@ local function callback( ply, cmd, args )
 	end
 end
 
-concommand.Add( "map_reload", callback, nil, "map_reload [delay=10]\n   Reload the map in {delay} seconds\n   To cancel a pending map reload, type: map_reload -1" )
+concommand.Add( "map_reload", callback, nil, "map_reload [delay=10]\n   重新加载地图在 {delay} 秒内\n   To cancel a pending map reload, type: map_reload -1" )
 
 net.Receive( "map_reload", function()
 	local delay = net.ReadFloat()

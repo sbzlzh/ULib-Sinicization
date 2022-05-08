@@ -101,7 +101,7 @@ function ULib.kick( ply, reason, calling_ply )
 		(string.format( "%s(%s)", calling_ply:Nick(), calling_ply:SteamID() ) or "Console")
 	local steamid = ply:SteamID()
 	if reason and nick then
-		ply:Kick( string.format( "被踢出 %s - %s", nick, reason ) )
+		ply:Kick( string.format( "被玩家%s踢出服务器-原因:%s", nick, reason ) )
 	elseif nick then
 		ply:Kick( "被踢出 " .. nick )
 	else
